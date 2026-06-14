@@ -1,6 +1,6 @@
 const Listing = require("../models/listing");
 
-module.exports.index = async (req, res) => {
+module.exports.index = async (req, res) => { 
     const { state, page = 1, limit = 12 } = req.query;
 
     const filter = {
@@ -29,7 +29,7 @@ module.exports.index = async (req, res) => {
         .skip(skip)
         .limit(l)
         .lean();
-
+        
     res.json(allListings);
 };
 

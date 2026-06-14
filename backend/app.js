@@ -26,10 +26,10 @@ app.set('trust proxy', 1);
 let dbUrl = process.env.ATLASDB_URL;
 
 
-if (process.env.NODE_ENV !== "production") {
-  dbUrl = "mongodb://127.0.0.1:27017/wanderlust";
-  console.log(" USING LOCAL DATABASE: " + dbUrl);
-}
+// if (process.env.NODE_ENV !== "production") {
+//   dbUrl = "mongodb://127.0.0.1:27017/wanderlust";
+//   console.log(" USING LOCAL DATABASE: " + dbUrl);
+// }
 
 if (!dbUrl) {
   console.error("CRITICAL ERROR: No Database URL found!");

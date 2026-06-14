@@ -9,7 +9,7 @@ const { storage } = require("../cloudConfig.js");
 const upload = multer({ storage });
 
 
-
+ console.log("Route hit at")
 router.route("/")
     .get(wrapAsync(index))
     .post(isLoggedIn, upload.single("listing[image]"),validateListing, wrapAsync(createListing));
