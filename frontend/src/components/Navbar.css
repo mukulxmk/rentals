@@ -1,0 +1,21 @@
+.btn-search {
+  background-color: #fe424d;
+  color: #fff;
+  border-radius: 25px;
+  padding: 0 1rem;
+}
+
+.btn-search:hover {
+  background-color: #fe424d;
+  color: #fff;
+}
+
+.search-inp {
+  border-radius: 25px;
+  padding: 0.5rem 3rem;
+}
+
+.fa-compass {
+    color: red;
+    font-size: 2rem;
+}
