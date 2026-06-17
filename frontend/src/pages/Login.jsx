@@ -12,14 +12,14 @@ export default function Login() {
   const location = useLocation();
   const { setCurrUser } = useContext(AuthContext);
 
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.username.trim()) newErrors.username = "Enter correct username";
+    if (!formData.email.trim()) newErrors.email = "Enter correct email";
     if (!formData.password.trim()) newErrors.password = "Enter correct password";
 
     setErrors(newErrors);
@@ -57,7 +57,7 @@ export default function Login() {
       setCurrUser(res.data.user);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       toast.dismiss(loadingToast);
-      toast.success(`Welcome back, ${res.data.user.username}!`, { icon: '👋' });
+      toast.success(`Welcome back, ${res.data.user.username.split(" ", 1)}!`, { icon: '👋' });
 
       const from = location.state?.from;
       const redirectUrl = (from === "/login" || from === "/signup" || !from)
@@ -80,15 +80,15 @@ export default function Login() {
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="relative group">
           <User className={`absolute left-0 top-3 transition-colors duration-300 ${errors.username ? "text-red-500" : "text-gray-400 group-focus-within:text-blue-500"}`} size={20} />
-          <input type="text"
-            id="username"
-            placeholder="Your Username"
-            value={formData.username} className={getInputClasses("username")} onChange={(e) => {
-              setFormData({ ...formData, username: e.target.value });
-              if (errors.username) setErrors({ ...errors, username: "" });
+          <input type="email"
+            id="email"
+            placeholder="Your Email"
+            value={formData.email} className={getInputClasses("email")} onChange={(e) => {
+              setFormData({ ...formData, email: e.target.value });
+              if (errors.email) setErrors({ ...errors, email: "" });
             }}
           />
-          {errors.username && <p className="text-red-500 text-xs">{errors.username}</p>}
+          {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
         </div>
 
         <div className="relative group">
