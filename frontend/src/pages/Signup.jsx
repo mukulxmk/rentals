@@ -61,7 +61,7 @@ export default function Signup() {
         toast.dismiss(loadingToast);
       }
 
-      toast.success(`Welcome ${res.data.user.username}!`, { icon: '👋' });
+      toast.success(`Welcome ${res.data.user.username.split(" ", 1)}!`, { icon: '👋' });
 
       const from = location.state?.from;
       const redirectUrl = (from === "/login" || from === "/signup" || !from)

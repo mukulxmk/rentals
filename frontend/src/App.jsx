@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { Toaster } from 'react-hot-toast';
+// import { registerSW } from 'virtual-pwa-register'
 
 const Home = lazy(() => import("./pages/Home"));
 const ShowListing = lazy(() => import("./pages/ShowListing"));
@@ -20,6 +21,8 @@ import Loader from "./components/Loader";
 const PageLoader = () => (
   <Loader className="h-[70vh]" />
 );
+
+// registerSW({ immediate: true });
 
 export default function App() {
 

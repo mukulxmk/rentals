@@ -18,7 +18,6 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-
   const INITIAL_LIMIT = 48;
   const LOAD_MORE_LIMIT = 24;
 

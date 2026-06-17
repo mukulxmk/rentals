@@ -5,9 +5,11 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config({ path: path.join(__dirname, ".env") });
 }
 
+// IMPORTS 
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
+const connectDB = require('./config/connectDB.js');
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const session = require("express-session");
@@ -15,37 +17,20 @@ const MongoStore = require('connect-mongo');
 const User = require("./models/user.js");
 const ExpressError = require("./utils/ExpressError.js");
 const compression = require("compression");
+const cookieParser = require("cookie-parser");
 
 const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const adminRouter = require("./routes/admin.js");
 
+// CREATING APP
 const app = express();
 app.set('trust proxy', 1);
-let dbUrl = process.env.ATLASDB_URL;
 
-
-// if (process.env.NODE_ENV !== "production") {
-//   dbUrl = "mongodb://127.0.0.1:27017/wanderlust";
-//   console.log(" USING LOCAL DATABASE: " + dbUrl);
-// }
-
-if (!dbUrl) {
-  console.error("CRITICAL ERROR: No Database URL found!");
-  process.exit(1);
-}
-
-
-main().then(() => {
+connectDB().then(() => {
   console.log("Connected to MongoDB successfully");
 }).catch((err) => console.log("DB Connection Error:", err));
-
-
-async function main() {
-  await mongoose.connect(dbUrl);
-}
-
 
 const allowedOrigins = process.env.NODE_ENV === 'production'
   ? ["https://wander-list-vw2z.vercel.app"]
@@ -60,10 +45,11 @@ app.use(compression());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 
 const store = MongoStore.create({
-  mongoUrl: dbUrl,
+  mongoUrl: process.env.ATLASDB_URL,
 
   touchAfter: 24 * 3600,
 });
@@ -92,11 +78,11 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 
 
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// app.use(passport.initialize());
+// app.use(passport.session());
+// passport.use(new LocalStrategy(User.authenticate()));
+// passport.serializeUser(User.serializeUser());
+// passport.deserializeUser(User.deserializeUser());
 
 
 app.use("/api/listings", listingRouter);
@@ -121,5 +107,5 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Backend Server is running on port ${port}`);
 });
