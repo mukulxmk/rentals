@@ -33,7 +33,7 @@ connectDB().then(() => {
 }).catch((err) => console.log("DB Connection Error:", err));
 
 const allowedOrigins = process.env.NODE_ENV === 'production'
-  ? process.env.FRONTEND_URL
+  ? [`${process.env.FRONTEND_URL}`]
   : ["http://localhost:5173"];
 
 app.use(cors({
