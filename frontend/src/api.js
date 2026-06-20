@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL: import.meta.env.MODE === "production"
-    ? `${import.meta.env.BACKEND_URL}/api`
+  ? `${import.meta.env.VITE_BACKEND_URL}/api`
     : "http://localhost:8000/api",
   withCredentials: true,
   timeout: 30000,
