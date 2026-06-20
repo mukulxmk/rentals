@@ -93,7 +93,7 @@ export default function Navbar() {
             <div className="text-rose-500 text-3xl transition-transform duration-300 group-hover:rotate-[360deg] group-hover:scale-110">
               <i className="fa-regular fa-compass"></i>
             </div>
-            <span className="text-rose-500 font-extrabold text-2xl tracking-tight font-heading">WanderList</span>
+            <span className="text-rose-500 font-extrabold text-2xl tracking-tight font-heading">WanderLust</span>
           </Link>
 
 
@@ -118,15 +118,15 @@ export default function Navbar() {
             <div
               onClick={() => {
                 if (!currUser) {
-                  toast.error("Please login to add a destination!");
+                  toast.error("Please login to become a host!");
                   navigate("/login");
                 } else {
-                  navigate("/listings/new");
+                  navigate("listings/new");
                 }
               }}
               className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-full hover:bg-gray-100 transition-all duration-200 cursor-pointer"
             >
-              Add Destination
+              Add a Destination
             </div>
 
             {!currUser ? (

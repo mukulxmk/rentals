@@ -9,20 +9,20 @@ if (process.env.NODE_ENV !== "production") {
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
-const connectDB = require('./config/connectDB.js');
+const connectDB = require('./src/config/connectDB.js');
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const session = require("express-session");
 const MongoStore = require('connect-mongo');
-const User = require("./models/user.js");
-const ExpressError = require("./utils/ExpressError.js");
+const User = require("./src/models/user.js");
+const ExpressError = require("./src/utils/ExpressError.js");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
 
-const listingRouter = require("./routes/listing.js");
-const reviewRouter = require("./routes/review.js");
-const userRouter = require("./routes/user.js");
-const adminRouter = require("./routes/admin.js");
+const listingRouter = require("./src/routes/listing.js");
+const reviewRouter = require("./src/routes/review.js");
+const userRouter = require("./src/routes/user.js");
+const adminRouter = require("./src/routes/admin.js");
 
 // CREATING APP
 const app = express();
@@ -78,15 +78,8 @@ const sessionOptions = {
 app.use(session(sessionOptions));
 
 
-// app.use(passport.initialize());
-// app.use(passport.session());
-// passport.use(new LocalStrategy(User.authenticate()));
-// passport.serializeUser(User.serializeUser());
-// passport.deserializeUser(User.deserializeUser());
-
-
 app.use("/api/listings", listingRouter);
-app.use("/api/listings/:id/reviews", reviewRouter);
+app.use("/api/listing/:id/reviews", reviewRouter);
 app.use("/api/auth", userRouter);
 
 app.use("/api/admin", adminRouter);
@@ -96,15 +89,15 @@ app.all("*", (req, res, next) => {
 });
 
 
-app.use((err, req, res, next) => {
-  let { statusCode = 500, message = "Something went wrong!" } = err;
-  res.status(statusCode).json({
-    success: false,
-    error: message
-  });
-});
+// app.use((err, req, res, next) => {
+//   let { statusCode = 500, message = "Something went wrong!" } = err;
+//   res.status(statusCode).json({
+//     success: false,
+//     error: message
+//   });
+// });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
   console.log(`Backend Server is running on port ${port}`);

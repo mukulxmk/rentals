@@ -16,7 +16,8 @@ module.exports.index = async (req, res) => {
     }
 
     const p = parseInt(page);
-    const l = parseInt(limit);
+    const l = parseInt(limit);console.log("---------------------");
+    
 
     let skip = (p - 1) * l;
     if (req.query.offset) {
@@ -66,6 +67,8 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res) => {
+    console.log("inside controller ");
+    
     let geoData = [];
     try {
         const location = req.body.listing.location;
@@ -79,6 +82,7 @@ module.exports.createListing = async (req, res) => {
 
         return res.status(400).json({ error: "Image upload is mandatory!" });
     }
+console.log("isinide controller ");
 
     let url = req.file.path;
     let filename = req.file.filename;

@@ -15,6 +15,8 @@ async function Login(req, res){
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) return res.status(401).json({ error: "Incorrect Password Entered."});
 
+        if(user.banned) return res.status(403).json({ error: "User is marked Banned."})
+
         const token = jwt.sign(
             { userId: user._id ,  role: user.role, email: user.email },
             process.env.JWT_SECRET, 

@@ -17,6 +17,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const validateForm = () => {
     let newErrors = {};
     if (!formData.email.trim()) newErrors.email = "Enter correct email";
@@ -53,7 +54,6 @@ export default function Login() {
     try {
       const res = await API.post("/auth/login", formData, { withCredentials: true });
 
-
       setCurrUser(res.data.user);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       toast.dismiss(loadingToast);
@@ -62,17 +62,36 @@ export default function Login() {
       const from = location.state?.from;
       const redirectUrl = (from === "/login" || from === "/signup" || !from)
         ? "/listings"
-        : from;
-
+        : from;  
+        
       navigate(redirectUrl, { replace: true });
-
 
     } catch (err) {
       toast.dismiss(loadingToast);
 
-      toast.error(err.response?.data?.error || "Invalid username or password");
+      if (!err.response) {
+        toast.error("Cannot connect to server. Please try again later.");
+        return;
+      }
+
+      switch (err.response.status) {
+        case 400:
+          toast.error(err.response.data?.error);
+          break;
+        case 401:
+          toast.error("Invalid username or password");
+          break;
+        case 403:
+          toast.error("Access denied");
+          break;
+        case 500:
+          toast.error("Internal server error");
+          break;
+        default:
+          toast.error( err.response.data?.error || "Something went wrong" );
+      }
     }
-  };
+  }
 
   return (
     <div className="max-w-md mx-auto mt-20 p-10 bg-white rounded shadow-lg border border-gray-300">

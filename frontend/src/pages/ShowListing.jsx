@@ -152,7 +152,7 @@ export default function ShowListing() {
   };
 
   const handleReviewSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
     e.stopPropagation();
 
     if (!currUser) {
@@ -168,10 +168,9 @@ export default function ShowListing() {
     const finalReview = { ...reviewForm, rating: finalRating };
 
     try {
-      const res = await API.post(`/listings/${id}/reviews`, { review: finalReview }, {
+      const res = await API.post(`/listing/${id}/reviews`, { review: finalReview }, {
         withCredentials: true
-      });
-
+      }); 
       toast.dismiss(loadingToast);
 
       if (res.data.message) {

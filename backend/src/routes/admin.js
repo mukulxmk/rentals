@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router(); 
 const Listing = require("../models/listing");
 const Review = require("../models/review");
-const { isAdmin } = require("../middleware");
+const { isAdmin } = require("../middlewares/middleware");
 
 
 router.get("/stats", isAdmin, async (req, res) => {
