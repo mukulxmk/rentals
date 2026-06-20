@@ -14,6 +14,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const BecomeHost = lazy(() => import("./pages/BecomeHost"))
 
 
 import Loader from "./components/Loader";
@@ -55,6 +56,11 @@ export default function App() {
 
               <Route path="/listings/:id" element={<ShowListing />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/host-profile/new" element={
+                <ProtectedRoute>
+                  <BecomeHost />
+                </ProtectedRoute>
+              } />
               <Route path="/listings/new" element={
                 <ProtectedRoute>
                   <NewListing />

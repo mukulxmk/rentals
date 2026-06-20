@@ -66,10 +66,13 @@ export default function NewListing() {
     });
 
     try {
-      await API.post("/listings", formData, {
+      const res = await API.post("/listings", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true
       });
+
+      console.log("new lsting", res.data);
+      
       toast.dismiss(loadingToast);
 
       toast.success("Submitted! It will be live after admin approval.", {

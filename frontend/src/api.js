@@ -3,7 +3,7 @@ import axios from "axios";
 const API = axios.create({
   baseURL: import.meta.env.MODE === "production"
     ? "https://wander-list-backend.vercel.app/api"
-    : "http://localhost:8080/api",
+    : "http://localhost:8000/api",
   withCredentials: true,
   timeout: 30000,
 });

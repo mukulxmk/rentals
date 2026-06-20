@@ -29,7 +29,15 @@ const userSchema = new Schema({
     loginStamps: [{
         type: Date,
         default: Date.now()
-    }]
+    }],
+    hostingDetails : {
+        isHost: { type: Boolean, default : false },
+        startDate : { type: Date }
+    },
+    banned : {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true});
 
 module.exports = mongoose.model("User", userSchema);
