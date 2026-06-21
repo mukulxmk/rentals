@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import toast from "react-hot-toast";
 gsap.registerPlugin(ScrollTrigger);
 import API from "../api";
+import UserMenu from "./UserMenu";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -115,6 +116,7 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex gap-4 font-semibold text-sm items-center">
+
             <div
               onClick={() => {
                 if (!currUser) {
@@ -161,40 +163,13 @@ export default function Navbar() {
                     title="User Menu"
                   >
                     <div className="bg-gray-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs">
-                      {/* {currUser.username.charAt(0).toUpperCase()} */}
+                      {currUser.username.charAt(0).toUpperCase()}
                     </div>
                     <span className="text-gray-700 font-medium">{currUser.username}</span>
                   </div>
 
 
-                  {isUserDropdownOpen && (
-                    <>
-
-                      <div className="fixed inset-0 z-[55] cursor-default" onClick={() => setIsUserDropdownOpen(false)}></div>
-
-                      <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-
-                        <div className="px-4 py-4 border-b border-gray-100 flex items-center gap-3 bg-gray-50/50">
-                          <div className="bg-gray-800 text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shadow-sm">
-                            {currUser.username.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-bold text-gray-800 text-sm">{currUser.username}</span>
-                            <span className="text-xs text-gray-500">Member</span>
-                          </div>
-                        </div>
-
-
-                        <button
-                          onClick={() => { handleLogout(); }}
-                          className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-rose-50 transition-colors flex items-center gap-2 font-medium cursor-pointer"
-                        >
-                          <i className="fa-solid fa-arrow-right-from-bracket"></i>
-                          Log out
-                        </button>
-                      </div>
-                    </>
-                  )}
+                  {isUserDropdownOpen && <UserMenu currUser={currUser} setIsUserDropdownOpen={setIsUserDropdownOpen} handleLogout={handleLogout}> </UserMenu>}
                 </div>
 
               </div>

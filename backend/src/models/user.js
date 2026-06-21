@@ -34,6 +34,12 @@ const userSchema = new Schema({
         isHost: { type: Boolean, default : false },
         startDate : { type: Date }
     },
+    profile: {
+        joined: { type: Date, default: Date.now() },
+        image: String,
+        email: String,
+        fullName: String
+    },
     banned : {
         type: Boolean,
         default: false

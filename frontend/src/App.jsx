@@ -14,7 +14,8 @@ const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const BecomeHost = lazy(() => import("./pages/BecomeHost"))
+const BecomeHost = lazy(() => import("./pages/BecomeHost"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"))
 
 
 import Loader from "./components/Loader";
@@ -27,7 +28,7 @@ const PageLoader = () => (
 
 export default function App() {
 
-  const isNotFound = !["/", "/listings", "/signup", "/login"].includes(location.pathname) &&
+  const isNotFound = !["/", "/listings", "/signup", "/login", "/profile"].includes(location.pathname) &&
     !location.pathname.startsWith("/listings/");
 
 
@@ -73,6 +74,11 @@ export default function App() {
                 </ProtectedRoute>
               } />
 
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <ProfilePage/>
+                </ProtectedRoute>
+              } />
 
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />

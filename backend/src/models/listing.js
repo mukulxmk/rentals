@@ -11,6 +11,12 @@ const listingSchema = new Schema({
   price: {type:Number,
     required:true,
   },
+  amenities:[String],
+  category: {
+      type: String,
+      required: true,
+      enum: ['Trending', 'Mountains', 'Beachfront', 'Swimming Pools', 'Countryside', 'City Center']
+    },
   location: {type:String,
     required:true,
   },

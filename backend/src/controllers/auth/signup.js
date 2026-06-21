@@ -13,7 +13,12 @@ async function SignUp(req, res){
 
         const hashedPassword = await bcrypt.hash(password, 12);
 
-        const newUser = new User({ username: username, email: email , password: hashedPassword }); 
+        const newUser = new User({ 
+            username: username, 
+            email: email , 
+            password: hashedPassword,
+            profile:{ joined: Date.now(), fullName: username, email: email }
+        }); 
 
         const token = jwt.sign(
             { userId: newUser._id ,  role: 'user', email: email },
