@@ -82,7 +82,6 @@ module.exports.createListing = async (req, res) => {
 
         return res.status(400).json({ error: "Image upload is mandatory!" });
     }
-console.log("isinide controller ");
 
     let url = req.file.path;
     let filename = req.file.filename;

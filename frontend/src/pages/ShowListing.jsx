@@ -9,32 +9,68 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
 import API from "../api";
+import DigitCounter from "../components/DigitCounter";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
+import { Calendar, ChevronDown, ChevronUp } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 import Map from "../components/Map";
+const options = {
+  timeZone: "Asia/Kolkata",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit"
+};
+const TXN_STAGES = [
+  {id: "st1", st1: "prdct-slct", 
+    open: false,
+    room: 0 ,
+    calOpen: false,
+    checkIn :{
+      calOpen: false,  
+      date: "--"
+    }, 
+    checkOut: { 
+      calOpen: false, 
+       date: "--"
+    } 
+  },
+  {id: "st2", st2: "prcd-t-py"},
+  {id: "st3", st3: "pymt-mthd"},
+  {id: "st4", st4: "rdrct"},
+  {id: "st5", st5: "scr-cnnctn"},
+  {id: "st6", st6: "dt-gnrtn"},
+  {id: "st7", st7: "cnfrm-py"},
+  {id: "st8", st8: ["success", "fail", "pending"]}
+]
 
 
 export default function ShowListing() {
-
 
   const { currUser } = useContext(AuthContext);
   const { id } = useParams();
   const [listing, setListing] = useState(null);
   const [reviewForm, setReviewForm] = useState({ rating: 1, comment: "" });
   const navigate = useNavigate();
-  const [likeCount, setLikeCount] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-
-
+  const [liked, setLiked] = useState({ bool: false, count: null });
+  const [ txn, setTXN ] = useState(TXN_STAGES);
+const [range, setRange] = useState();
   const containerRef = useRef(null);
+  
+// console.log(txn);
+
+// console.log(range,"from date picker");
 
   const fetchListing = async () => {
     try {
       const res = await API.get(`/listings/${id}`);
       setListing(res.data);
-      setLikeCount(res.data.likes || 0);
-      setIsLiked(res.data.likedBy?.includes(currUser?._id) || false);
+      setLiked(res.data.likes || 0);
+      setLiked(res.data.likedBy?.includes(currUser?._id) || false);
     } catch (err) {
       console.error(err);
     }
@@ -42,8 +78,8 @@ export default function ShowListing() {
 
   useEffect(() => {
     if (listing) {
-      setLikeCount(listing.likes || 0);
-      setIsLiked(listing.likedBy?.includes(currUser?._id) || false);
+      setLiked(listing.likes || 0);
+      setLiked(listing.likedBy?.includes(currUser?._id) || false);
     }
   }, [listing, currUser]);
 
@@ -201,6 +237,108 @@ export default function ShowListing() {
     }
   };
 
+  const handleST1 = async function(){
+    setTXN({
+      ...txn,
+      st1: "prdct-slct"
+    })
+  }
+
+  const updateNestedField = (obj, path, value) => {
+    const keys = path;
+// console.log(obj, path, value);
+
+    const result = { ...obj };
+    let current = result;
+// console.log("==========", result, current);
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      // console.log(current[keys[i]]);
+      
+      current[keys[i]] = { ...current[keys[i]] };
+      // console.log(current[keys[i]], "222222222222");
+
+      current = current[keys[i]];
+      // console.log(current[keys[i]], "3333333333");
+
+    }
+// console.log(current, "outside loop");
+
+    current[keys[keys.length - 1]] = value;
+// console.log(current, "outside loop"), result;
+
+    return result;
+  };
+  
+  // const handleTXNMutation = (id, op, key, newValue) => {
+  //   setTXN(prevItems =>
+  //     prevItems.map(item => { 
+  //       // console.log(item.id, id, op, key,newValue , item.key,item[`${key}`]);
+
+  //       if(item.id === id){
+  //         if(op === "digit"){            
+  //           return { ...item, [key] : (item[`${key}`] + newValue)}
+  //         }else if(op === "open-cal"){
+  //           return { ...item, [key]: (!item[`${key}`]) }
+  //         }
+  //       }else{
+  //        return { ...item}
+  //       }
+  // })
+  //   );
+  // };
+
+  const handleTXNMutation = (id, op, key, newValue) => {
+    console.log(newValue);
+    
+  setTXN(prevItems =>
+    prevItems.map(item => {
+      if (item.id !== id) return item;
+
+      const keys = key.split(".");
+      // console.log(keys);
+      
+      const currentValue = keys.reduce(
+        (acc, curr) => acc?.[curr],     
+        item
+      );
+      // console.log("Ccccccccccccccccccccccccccccccc", currentValue, item, key, newValue, op);
+      
+
+      switch (op) {
+        case "digit":
+          return updateNestedField( item, keys, currentValue + newValue );
+
+        case "calendar":
+          return updateNestedField( item, keys, !currentValue );
+
+        case "set-date":
+          newValue.setUTCHours(0,0,0,0);
+          return updateNestedField( item, keys, newValue);
+  
+        case "boolean":
+          return {
+            ...item,
+            [key]: !currentValue
+          };
+        default:
+          return item;
+      }
+    })
+  );
+};
+  
+
+  const handleRoomsInt = (id, key, op) => {
+    setTXN(prev => 
+      prev.map(item => 
+        item.id === id
+          ? { ...item, [key] : item.key + op}
+          : item
+      )
+    )
+  }
+
   if (!listing) {
     return <Loader className="h-screen w-full" />;
   }
@@ -224,16 +362,16 @@ export default function ShowListing() {
               onClick={async () => {
                 if (!currUser) return toast.error("Login to like!");
 
-                const newLikedState = !isLiked;
-                setIsLiked(newLikedState);
-                setLikeCount(prev => newLikedState ? prev + 1 : prev - 1);
+                const newLikedState = !liked.bool;
+                setLiked(newLikedState);
+                setLiked(prev => newLikedState ? prev + 1 : prev - 1);
                 try { await API.post(`/listings/${id}/like`); }
-                catch (err) { setIsLiked(!newLikedState); setLikeCount(prev => prev - 1); toast.error("Failed"); }
+                catch (err) { setLiked(!newLikedState); setLiked(prev => prev - 1); toast.error("Failed"); }
               }}
               className="flex items-center gap-2 text-gray-600 font-semibold hover:bg-gray-100 px-4 py-2 rounded-lg transition"
             >
-              <i className={`fa-heart ${isLiked ? "fa-solid text-rose-500" : "fa-regular"}`}></i>
-              <span>{isLiked ? likeCount + " Likes" : likeCount + " Likes"}</span>
+              <i className={`fa-heart ${liked.bool ? "fa-solid text-rose-500" : "fa-regular"}`}></i>
+              <span>{liked.bool ? liked.count + " Likes" : liked.count + " Likes"}</span>
             </button>
           </div>
         </div>
@@ -345,31 +483,167 @@ export default function ShowListing() {
         <div className="md:col-span-1 relative">
           <div className="sticky top-28 border border-gray-200 shadow-xl rounded-2xl p-6 bg-white ring-1 ring-black/5">
             <div className="flex justify-between items-end mb-6">
+
               <div>
                 <span className="text-2xl font-bold">₹{listing.price?.toLocaleString("en-IN")}</span>
                 <span className="text-gray-600 text-sm"></span>
               </div>
-              <div className="flex items-center gap-1 text-xs font-bold underline">
-                <i className="fa-solid fa-star text-[10px]"></i>
-                <span>{listing.rating || "New"}</span>
-              </div>
+
             </div>
 
-            <button className="w-full bg-gradient-to-r from-rose-500 to-rose-600 text-white font-bold py-3 rounded-lg hover:brightness-110 active:scale-[0.98] transition-all shadow-lg shadow-rose-200 mb-2">
-              Reserve
-            </button>
+
+            <div className="sticky top-20 w-full flex items-center justify-center backdrop-blur-[1px] font-bold py-3 rounded-lg 
+                hover:bg-gradient-to-r from-blue-500 to-rose-600 hover:text-white 
+                transition-all "
+            >
+              <button onClick={() => handleTXNMutation("st1", "boolean", "open")} >
+                Reserve
+              </button>
+            </div>
+ 
             <div className="text-center text-xs text-gray-500">You won't be charged yet</div>
+{console.log(txn[0])
+}
+            {txn[0].open === true && (
+              <div className="flex flex-col gap-4"> 
+
+                <span className="w-full flex flex-row justify-center mt-4 pt-4 gap-2 overflow-x-auto whitespace-nowrap border-t border-gray-400 text-xl font-bold" > 
+                  Please reserve <DigitCounter handleRoomInt={handleTXNMutation} roomInt={txn[0].room}/> Rooms
+                </span>
+
+                <div className="bg-white rounded-xl border p-4 shadow-sm"> 
+                  <div className="flex justify-between text-sm"> 
+                    <div className="flex flex-col">
+                      <p className="font-xl">Check In</p> 
+                      <p className="flex items-center gap-2"> 
+                        <Calendar size={14} className="hover:scale-125" 
+                          onClick={() => {
+                            handleTXNMutation("st1", "calendar", "checkIn.calOpen")
+                          }}/> 
+                        {txn[0].checkIn.date ? txn[0].checkIn.date.toLocaleString('en-GB', options) : "00 MONTH, 0000"} 
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col"> 
+                      <p className="font-medium">Check Out</p> 
+                      <p className="flex items-center gap-2">
+                        <Calendar size={14} className="hover:scale-125" onClick={() => {
+                          if(txn[0].checkIn.calOpen === true ) return toast.error("Please Save Check In date first.");
+                          return handleTXNMutation("st1", "calendar", "checkOut.calOpen")
+                        }}/>
+                        {txn[0].checkOut.date ? txn[0].checkOut.date.toLocaleString('en-GB', options) : "00 MONTH, 0000"} 
+                      </p> 
+                    </div> 
+                  </div> 
 
 
+                  { txn[0].checkIn.calOpen === true &&
+                   (<div>
+                      <DayPicker 
+                        mode="single" 
+                        selected={txn[0].checkIn.date}
+                        onSelect={(date) =>  handleTXNMutation( "st1",  "set-date" , "checkIn.date",  date )} 
+                        disabled={{ before: new Date() }} 
+                        numberOfMonths={1} pagedNavigation 
+                      /> 
+                      <button 
+                        className="w-full text-black block text-center border-1 border-black-300 py-2 rounded-lg 
+                        transition-all duration-300 hover:bg-rose-600 hover:shadow-lg hover:border-white hover:text-white"
+                        onClick={() => handleTXNMutation("st1", "calendar", "checkIn.calOpen")}>
+                          Save
+                        </button>
+                   </div>
+                  )}
+
+                  { txn[0].checkOut.calOpen === true && txn[0].checkIn.calOpen === false 
+                    && (<div>
+                      <DayPicker 
+                        mode="single" 
+                        selected={txn[0].checkOut.date}
+                        onSelect={(date) =>  { return handleTXNMutation( "st1",  "set-date" , "checkOut.date",  new Date(date) )}} 
+                        disabled={{ before: new Date() }} 
+                        numberOfMonths={1} pagedNavigation 
+                      /> 
+                      <button
+                        className="w-full text-black block text-center border-1 border-black-300 py-2 rounded-lg 
+                          transition-all duration-300 hover:bg-rose-600 hover:shadow-lg hover:border-white hover:text-white"
+                        onClick={() => handleTXNMutation("st1", "calendar", "checkOut.calOpen")}>
+                          Save
+                        </button>
+                      </div>)
+                  }
+                </div>
+
+                <div>
+                  <p className="font-bold mb-4"> Payment Summary</p>
+                  <span className="flex justify-between">
+                    <p>Total Days </p>
+                    <p>RS.some</p>
+                  </span>
+                  <span className="flex justify-between">
+                    <p>Total Rooms </p>
+                    <p>RS.some</p>
+                  </span>
+                  <span className="flex justify-between">
+                    <p>GST </p>
+                    <p>RS.some</p>
+                  </span>
+                  <span className="flex justify-between">
+                    <p>Some Tax</p>
+                    <p>RS.some</p>
+                  </span>
+                  <span className="flex justify-between border-t mt-4 pt-3 font-bold">
+                    <p>Grand Total </p>
+                    <p>RS.some</p>
+                  </span>
+                </div>
 
 
+                {/* <span className="w-full flex justfiy-center">
+                  <span className="w-full flex flex-col justify-center">
+                    CHECK IN
+                  </span>
+                  <span className="w-full flex flex-col justify-center">
+                    CHECK OUT
+                  </span>
+                </span> */}
+                {txn[0].open && (
+                  <div 
+                    className="w-full flex items-center justify-center rounded-lg border-b border-rose-200 hover:shadow-md shadow-rose-200 "
+                    onClick={() => handleTXNMutation("st1", "boolean", "open")}
+                  >
+                    <ChevronUp size={28} /> 
+                  </div>
+                )}
 
-            {currUser && (
+                <div className="sticky top-20 w-full flex items-center justify-center backdrop-blur-[1px] font-bold py-3 rounded-lg border-[0.5px]
+                  hover:bg-gradient-to-r from-blue-500 to-rose-600 hover:text-white [&.is-scrolled]:border-none
+                  active:scale-[0.98] 
+                  transition-all"
+                >
+                  <button onClick={() => handleTXNMutation("st1", "boolean", "next")} >
+                    Proceed To Pay
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {txn.st2 === "prcd-t-py" && (
+              <div class="w-full h-fit flex flex-col bg-gray-100 p-4 gap-2">
+                <span class="block bg-blue-500 text-white p-2 rounded">Span Item 1</span>
+                <span class="block bg-blue-600 text-white p-2 rounded">Span Item 2</span>
+                <span class="block bg-blue-700 text-white p-2 rounded">Span Item 3</span>
+              </div>
+            )}
+
+
+            
+            {/* {currUser && (
               <div className="border-t border-gray-200 mt-4 pt-4 flex gap-2">
                 <button onClick={handleEdit} className="flex-1 bg-gray-900 text-white text-sm font-bold py-2 rounded hover:bg-black">Edit</button>
                 <button onClick={handleDelete} className="flex-1 bg-white border border-gray-300 text-gray-900 text-sm font-bold py-2 rounded hover:bg-gray-50">Delete</button>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 

@@ -15,7 +15,7 @@ router.get("/logout", Logout);
 
 router.patch("/profile", isLoggedIn, editProfile);
 
-router.get("/current_user", (req, res) => {
+router.get("/current_user", isLoggedIn, (req, res) => {
 
     res.json(req.user || null);
 });

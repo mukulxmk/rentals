@@ -20,8 +20,12 @@ async function SignUp(req, res){
             profile:{ joined: Date.now(), fullName: username, email: email }
         }); 
 
-        const token = jwt.sign(
-            { userId: newUser._id ,  role: 'user', email: email },
+        const token = jwt.sign({             
+            id: newUser._id , 
+            username: newUser.username,
+            email: email,
+            role: newUser.role
+        },
             process.env.JWT_SECRET, 
             { expiresIn : '1d'}
         )

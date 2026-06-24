@@ -17,8 +17,12 @@ async function Login(req, res){
 
         if(user.banned) return res.status(403).json({ error: "User is marked Banned."})
 
-        const token = jwt.sign(
-            { userId: user._id ,  role: user.role, email: user.email },
+        const token = jwt.sign({ 
+            id: user._id , 
+            username: user.username,
+            email: email,
+            role: user.role
+        },
             process.env.JWT_SECRET, 
             { expiresIn : '3d'}
         )

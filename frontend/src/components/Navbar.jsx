@@ -17,6 +17,7 @@ export default function Navbar() {
   const sidebarRef = useRef(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+console.log(currUser, "nnnnnnnnnnnnnnnnnnnn");
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -163,9 +164,9 @@ export default function Navbar() {
                     title="User Menu"
                   >
                     <div className="bg-gray-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs">
-                      {currUser.username.charAt(0).toUpperCase()}
+                      {currUser ? currUser?.username.charAt(0).toUpperCase() : "U"}
                     </div>
-                    <span className="text-gray-700 font-medium">{currUser.username}</span>
+                    <span className="text-gray-700 font-medium">{currUser ? currUser?.username : "User"}</span>
                   </div>
 
 
